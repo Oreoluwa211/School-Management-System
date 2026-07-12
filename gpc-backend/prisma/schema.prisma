@@ -1,0 +1,656 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ════════════════════════════════════
+// ENUMS
+// ════════════════════════════════════
+
+enum Role {
+  super_admin
+  admin
+  staff
+  student
+}
+
+enum ClassLevel {
+  JSS
+  SS
+}
+
+enum SubjectLevel {
+  JSS
+  SS
+  ALL
+}
+
+enum TermName {
+  FIRST_TERM  @map("1st Term")
+  SECOND_TERM @map("2nd Term")
+  THIRD_TERM  @map("3rd Term")
+}
+
+enum AdmissionStatus {
+  pending
+  review
+  approved
+  rejected
+  fee_paid
+  enrolled
+}
+
+enum StudentStatus {
+  active
+  graduated
+  transferred
+  suspended
+  withdrawn
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+  excused
+}
+
+enum MaterialType {
+  notes
+  textbook
+  past_question
+  video
+  worksheet
+  other
+}
+
+enum LessonStatus {
+  draft
+  upcoming
+  in_progress
+  delivered
+}
+
+enum NoticeCategory {
+  general
+  academic
+  event
+  fees
+  urgent
+  birthday
+  meeting
+}
+
+enum NoticeAudience {
+  all
+  students
+  staff
+  class
+}
+
+enum PaymentType {
+  school_fees
+  admission_fee
+  other
+}
+
+enum PaymentStatus {
+  pending
+  success
+  failed
+  refunded
+}
+
+enum ResourceType {
+  ebook
+  past_question
+  reference
+  magazine
+  other
+}
+
+// ════════════════════════════════════
+// 1. USERS & AUTH
+// ════════════════════════════════════
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password_hash String
+  role          Role
+  is_active     Boolean  @default(true)
+  last_login    DateTime?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  refresh_tokens     RefreshToken[]
+  staff              Staff?
+  student            Student?
+  reviewed_admissions Admission[]      @relation("AdmissionReviewer")
+  created_notices    Notice[]
+  uploaded_timetables Timetable[]
+  uploaded_materials CourseMaterial[]
+  uploaded_resources LibraryResource[]
+  audit_logs         AuditLog[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  user_id    String
+  token      String   @unique
+  expires_at DateTime
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// ════════════════════════════════════
+// 2. ACADEMIC STRUCTURE
+// ════════════════════════════════════
+
+model AcademicSession {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  is_current Boolean  @default(false)
+  start_date DateTime
+  end_date   DateTime
+
+  terms             Term[]
+  admissions        Admission[]
+  students          Student[]
+  staff_assignments StaffSubjectAssignment[]
+  results           Result[]
+  report_cards      ReportCard[]
+  payments          Payment[]
+
+  @@map("academic_sessions")
+}
+
+model Term {
+  id              String   @id @default(uuid())
+  session_id      String
+  name            TermName
+  is_current      Boolean  @default(false)
+  start_date      DateTime
+  end_date        DateTime
+  result_deadline DateTime?
+
+  session         AcademicSession   @relation(fields: [session_id], references: [id], onDelete: Cascade)
+  attendance      Attendance[]
+  results         Result[]
+  report_cards    ReportCard[]
+  timetables      Timetable[]
+  course_materials CourseMaterial[]
+  lesson_notes    LessonNote[]
+  fee_schedules   FeeSchedule[]
+  payments        Payment[]
+
+  @@map("terms")
+}
+
+model Class {
+  id    String     @id @default(uuid())
+  name  String
+  arm   String
+  level ClassLevel
+
+  students          Student[]
+  class_teachers    Staff[]
+  staff_assignments StaffSubjectAssignment[]
+  attendance        Attendance[]
+  results           Result[]
+  report_cards      ReportCard[]
+  timetables        Timetable[]
+  course_materials  CourseMaterial[]
+  lesson_notes      LessonNote[]
+  notices           Notice[]
+
+  @@unique([name, arm])
+  @@map("classes")
+}
+
+model Subject {
+  id    String       @id @default(uuid())
+  name  String       @unique
+  level SubjectLevel
+
+  staff_assignments StaffSubjectAssignment[]
+  results           Result[]
+  course_materials  CourseMaterial[]
+  lesson_notes      LessonNote[]
+  library_resources LibraryResource[]
+
+  @@map("subjects")
+}
+
+// ════════════════════════════════════
+// 3. STAFF
+// ════════════════════════════════════
+
+model Staff {
+  id               String    @id @default(uuid())
+  user_id          String    @unique
+  staff_id         String    @unique
+  first_name       String
+  last_name        String
+  middle_name      String?
+  email            String    @unique
+  phone            String?
+  gender           String?
+  date_of_birth    DateTime?
+  state_of_origin  String?
+  address          String?
+  qualification    String?
+  designation      String?
+  department       String?
+  date_employed    DateTime?
+  profile_photo    String?
+  is_class_teacher Boolean   @default(false)
+  class_id         String?
+
+  user                  User                      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  class                 Class?                    @relation(fields: [class_id], references: [id])
+  subject_assignments   StaffSubjectAssignment[]
+  attendance_recorded   Attendance[]
+  results_entered       Result[]
+  lesson_notes          LessonNote[]
+
+  @@map("staff")
+}
+
+model StaffSubjectAssignment {
+  id         String @id @default(uuid())
+  staff_id   String
+  subject_id String
+  class_id   String
+  session_id String
+
+  staff   Staff           @relation(fields: [staff_id], references: [id], onDelete: Cascade)
+  subject Subject         @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+  class   Class           @relation(fields: [class_id], references: [id], onDelete: Cascade)
+  session AcademicSession @relation(fields: [session_id], references: [id], onDelete: Cascade)
+
+  @@unique([staff_id, subject_id, class_id, session_id])
+  @@map("staff_subject_assignments")
+}
+
+// ════════════════════════════════════
+// 4. ADMISSIONS
+// ════════════════════════════════════
+
+model Admission {
+  id                String          @id @default(uuid())
+  reference_number  String          @unique
+
+  first_name   String
+  last_name    String
+  middle_name  String?
+  date_of_birth DateTime
+  gender       String
+  religion     String?
+  state_of_origin String?
+  lga          String?
+  address      String
+  medical_notes String?
+
+  class_applying_for String
+  boarding_type      String
+
+  father_name     String
+  father_phone    String
+  father_email    String
+  father_occupation String?
+  mother_name     String?
+  mother_phone    String?
+  mother_email    String?
+  mother_occupation String?
+
+  emergency_name     String
+  emergency_phone    String
+  emergency_relation String?
+  preferred_comm     String?
+
+  passport_url       String?
+  birth_cert_url     String?
+  medical_report_url String?
+  academic_report_url String?
+  extra_doc_url      String?
+
+  status          AdmissionStatus @default(pending)
+  reviewed_by     String?
+  reviewed_at     DateTime?
+  rejection_reason String?
+
+  session_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  session  AcademicSession @relation(fields: [session_id], references: [id])
+  reviewer User?           @relation("AdmissionReviewer", fields: [reviewed_by], references: [id])
+  student  Student?
+  payments Payment[]
+
+  @@map("admissions")
+}
+
+// ════════════════════════════════════
+// 5. STUDENTS
+// ════════════════════════════════════
+
+model Student {
+  id            String   @id @default(uuid())
+  user_id       String?  @unique
+  admission_id  String?  @unique
+  student_id    String   @unique
+
+  first_name  String
+  last_name   String
+  middle_name String?
+  email       String?  @unique
+  date_of_birth DateTime?
+  gender      String?
+  religion    String?
+  state_of_origin String?
+  lga         String?
+  address     String?
+  blood_group String?
+  genotype    String?
+  medical_notes String?
+  boarding_type String?
+  profile_photo String?
+
+  father_name  String?
+  father_phone String?
+  father_email String?
+  mother_name  String?
+  mother_phone String?
+
+  emergency_name  String?
+  emergency_phone String?
+
+  class_id   String
+  session_id String
+  status     StudentStatus @default(active)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user      User?            @relation(fields: [user_id], references: [id])
+  admission Admission?       @relation(fields: [admission_id], references: [id])
+  class     Class            @relation(fields: [class_id], references: [id])
+  session   AcademicSession  @relation(fields: [session_id], references: [id])
+
+  attendance   Attendance[]
+  results      Result[]
+  report_cards ReportCard[]
+  payments     Payment[]
+
+  @@map("students")
+}
+
+// ════════════════════════════════════
+// 6. ATTENDANCE
+// ════════════════════════════════════
+
+model Attendance {
+  id         String            @id @default(uuid())
+  student_id String
+  class_id   String
+  term_id    String
+  date       DateTime
+  status     AttendanceStatus
+  recorded_by String
+  notes      String?
+
+  student  Student @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  class    Class   @relation(fields: [class_id], references: [id])
+  term     Term    @relation(fields: [term_id], references: [id])
+  recorder Staff   @relation(fields: [recorded_by], references: [id])
+
+  @@unique([student_id, date])
+  @@map("attendance")
+}
+
+// ════════════════════════════════════
+// 7. RESULTS & REPORT CARDS
+// ════════════════════════════════════
+
+model Result {
+  id          String   @id @default(uuid())
+  student_id  String
+  subject_id  String
+  class_id    String
+  term_id     String
+  session_id  String
+  staff_id    String?
+
+  ca_score    Decimal  @db.Decimal(5, 2) @default(0)
+  exam_score  Decimal  @db.Decimal(5, 2) @default(0)
+  // total_score = ca_score + exam_score, calculated in application logic on save
+  total_score Decimal  @db.Decimal(5, 2) @default(0)
+  grade       String?
+  remark      String?
+
+  is_submitted Boolean   @default(false)
+  submitted_at DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  student Student         @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  subject Subject         @relation(fields: [subject_id], references: [id])
+  class   Class           @relation(fields: [class_id], references: [id])
+  term    Term            @relation(fields: [term_id], references: [id])
+  session AcademicSession @relation(fields: [session_id], references: [id])
+  staff   Staff?          @relation(fields: [staff_id], references: [id])
+
+  @@unique([student_id, subject_id, term_id])
+  @@map("results")
+}
+
+model ReportCard {
+  id         String   @id @default(uuid())
+  student_id String
+  term_id    String
+  session_id String
+  class_id   String
+
+  total_score Decimal @db.Decimal(6, 2)
+  average     Decimal @db.Decimal(5, 2)
+  position    Int
+  class_size  Int
+
+  teacher_remark   String?
+  principal_remark String?
+
+  is_published Boolean   @default(false)
+  published_at DateTime?
+
+  student Student         @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  term    Term            @relation(fields: [term_id], references: [id])
+  session AcademicSession @relation(fields: [session_id], references: [id])
+  class   Class           @relation(fields: [class_id], references: [id])
+
+  @@unique([student_id, term_id])
+  @@map("report_cards")
+}
+
+// ════════════════════════════════════
+// 8. TIMETABLES, MATERIALS, LESSON NOTES
+// ════════════════════════════════════
+
+model Timetable {
+  id         String  @id @default(uuid())
+  class_id   String?
+  term_id    String
+  title      String
+  file_url   String
+  uploaded_by String
+  created_at DateTime @default(now())
+
+  class    Class? @relation(fields: [class_id], references: [id])
+  term     Term   @relation(fields: [term_id], references: [id])
+  uploader User   @relation(fields: [uploaded_by], references: [id])
+
+  @@unique([class_id, term_id])
+  @@map("timetables")
+}
+
+model CourseMaterial {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  subject_id  String?
+  class_id    String?
+  term_id     String?
+  file_url    String
+  file_type   String?
+  file_size   Int?
+  material_type MaterialType
+  uploaded_by String
+  created_at  DateTime @default(now())
+
+  subject  Subject? @relation(fields: [subject_id], references: [id])
+  class    Class?   @relation(fields: [class_id], references: [id])
+  term     Term?    @relation(fields: [term_id], references: [id])
+  uploader User     @relation(fields: [uploaded_by], references: [id])
+
+  @@map("course_materials")
+}
+
+model LessonNote {
+  id          String       @id @default(uuid())
+  staff_id    String
+  subject_id  String?
+  class_id    String?
+  term_id     String?
+  title       String
+  content     String
+  week_number Int?
+  status      LessonStatus @default(draft)
+  file_url    String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  staff   Staff    @relation(fields: [staff_id], references: [id], onDelete: Cascade)
+  subject Subject? @relation(fields: [subject_id], references: [id])
+  class   Class?   @relation(fields: [class_id], references: [id])
+  term    Term?    @relation(fields: [term_id], references: [id])
+
+  @@map("lesson_notes")
+}
+
+// ════════════════════════════════════
+// 9. NOTICES
+// ════════════════════════════════════
+
+model Notice {
+  id         String          @id @default(uuid())
+  title      String
+  content    String
+  category   NoticeCategory
+  audience   NoticeAudience  @default(all)
+  class_id   String?
+  pin_until  DateTime?
+  is_active  Boolean         @default(true)
+  created_by String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  class   Class? @relation(fields: [class_id], references: [id])
+  creator User   @relation(fields: [created_by], references: [id])
+
+  @@map("notices")
+}
+
+// ════════════════════════════════════
+// 10. PAYMENTS & FEES
+// ════════════════════════════════════
+
+model Payment {
+  id            String        @id @default(uuid())
+  student_id    String?
+  admission_id  String?
+  amount        Decimal       @db.Decimal(10, 2)
+  description   String?
+  payment_type  PaymentType
+  term_id       String?
+  session_id    String?
+
+  paystack_ref    String? @unique
+  paystack_status String?
+  paid_at         DateTime?
+  status          PaymentStatus @default(pending)
+  created_at      DateTime @default(now())
+
+  student   Student?         @relation(fields: [student_id], references: [id])
+  admission Admission?       @relation(fields: [admission_id], references: [id])
+  term      Term?            @relation(fields: [term_id], references: [id])
+  session   AcademicSession? @relation(fields: [session_id], references: [id])
+
+  @@map("payments")
+}
+
+model FeeSchedule {
+  id          String     @id @default(uuid())
+  class_level ClassLevel
+  amount      Decimal    @db.Decimal(10, 2)
+  term_id     String
+  description String?
+  created_at  DateTime @default(now())
+
+  term Term @relation(fields: [term_id], references: [id])
+
+  @@map("fee_schedules")
+}
+
+// ════════════════════════════════════
+// 11. LIBRARY
+// ════════════════════════════════════
+
+model LibraryResource {
+  id            String       @id @default(uuid())
+  title         String
+  author        String?
+  description   String?
+  subject_id    String?
+  level         String?
+  resource_type ResourceType
+  file_url      String
+  cover_url     String?
+  is_active     Boolean @default(true)
+  added_by      String
+  created_at    DateTime @default(now())
+
+  subject Subject? @relation(fields: [subject_id], references: [id])
+  adder   User     @relation(fields: [added_by], references: [id])
+
+  @@map("library_resources")
+}
+
+// ════════════════════════════════════
+// 12. AUDIT LOGS
+// ════════════════════════════════════
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  user_id    String?
+  action     String
+  entity     String
+  entity_id  String?
+  details    Json?
+  ip_address String?
+  created_at DateTime @default(now())
+
+  user User? @relation(fields: [user_id], references: [id])
+
+  @@map("audit_logs")
+}

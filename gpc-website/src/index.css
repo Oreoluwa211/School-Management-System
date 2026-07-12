@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #0a1628;
+  --color-navy-light: #102338;
+  --color-navy-deep: #060d18;
+
+  --color-gold: #c9a84c;
+  --color-gold-light: #e0c576;
+  --color-gold-dark: #a8862f;
+
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "DM Sans", sans-serif;
+
+  --radius-xl2: 1.25rem;
+
+  --shadow-gold: 0 8px 30px -8px rgba(201,168,76,0.45);
+  --shadow-card: 0 10px 40px -15px rgba(10,22,40,0.4);
+
+  --animate-gridMove: gridMove 6s linear infinite;
+  --animate-float: float 4s ease-in-out infinite;
+}
+
+@keyframes gridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: #ffffff;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c9a84c; border-radius: 10px; }
