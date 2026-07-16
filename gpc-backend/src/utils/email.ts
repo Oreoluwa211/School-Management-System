@@ -10,6 +10,27 @@ const transporter = env.SMTP_HOST
     })
   : null;
 
+export async function sendPasswordResetEmail(to: string, token: string) {
+  const resetUrl = `${env.CLIENT_URL}/reset-password?token=${token}`;
+
+  if (!transporter) {
+    console.log("\n📧 [DEV] Password reset link (SMTP not configured):");
+    console.log(`   ${resetUrl}\n`);
+    return;
+  }
+
+  await transporter.sendMail({
+    from: env.SMTP_FROM,
+    to,
+    subject: "Reset your Goodnews Private College password",
+    html: `
+      <p>You requested a password reset.</p>
+      <p><a href="${resetUrl}">Click here to reset your password</a></p>
+      <p>This link expires in 15 minutes. If you didn't request this, please ignore this email.</p>
+    `,
+  });
+}
+
 export async function sendApplicationStatusEmail(admission: {
   reference_number: string;
   father_email: string;
@@ -37,6 +58,10 @@ export async function sendApplicationStatusEmail(admission: {
     from: env.SMTP_FROM,
     to,
     subject: `GPC Admission Update — ${admission.reference_number}`,
-    html: `<p>Dear Parent/Guardian,</p><p>${message}</p><p>Reference: <strong>${admission.reference_number}</strong></p>`,
+    html: `
+      <p>Dear Parent/Guardian,</p>
+      <p>${message}</p>
+      <p>Reference: <strong>${admission.reference_number}</strong></p>
+    `,
   });
 }
