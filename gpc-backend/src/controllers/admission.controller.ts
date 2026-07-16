@@ -77,7 +77,7 @@ export const createAdmission = async (req: Request, res: Response) => {
 };
 
 export const trackAdmission = async (req: Request, res: Response) => {
-  const { ref } = req.params;
+  const ref = req.params.ref as string;
 
   const admission = await prisma.admission.findUnique({
     where: { reference_number: ref.toUpperCase() },
@@ -137,7 +137,8 @@ export const listAdmissions = async (req: AuthRequest, res: Response) => {
 };
 
 export const getAdmission = async (req: AuthRequest, res: Response) => {
-  const admission = await prisma.admission.findUnique({ where: { id: req.params.id } });
+  const id = req.params.id as string;
+const admission = await prisma.admission.findUnique({ where: { id } });
   if (!admission) return res.status(404).json({ message: "Application not found" });
   res.json(admission);
 };
@@ -153,8 +154,8 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
 
 export const updateAdmissionStatus = async (req: AuthRequest, res: Response) => {
   const { status, rejection_reason } = req.body;
-
-  const admission = await prisma.admission.findUnique({ where: { id: req.params.id } });
+  const id = req.params.id as string;
+  const admission = await prisma.admission.findUnique({ where: { id } });
   if (!admission) return res.status(404).json({ message: "Application not found" });
 
   const allowed = ALLOWED_TRANSITIONS[admission.status] || [];
