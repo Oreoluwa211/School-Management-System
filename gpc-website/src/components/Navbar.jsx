@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const navLinks = [
   { name: "About", href: "/about" },
-  { name: "News", href: "/news" },
-  { name: "Activities", href: "/activities" },
-  { name: "Anthem", href: "/anthem" },
-  { name: "Contact", href: "/contact" },
+  { name: "News", href: "/#news" },
+  { name: "Activities", href: "/#activities" },
+  { name: "Anthem", href: "/#anthem" },
+  { name: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -56,10 +56,10 @@ export default function Navbar() {
 
         {/* Right buttons */}
         <div className="hidden lg:flex items-center gap-3">
-          <a href="/staff/login" className="px-4 py-2 rounded-full text-sm font-medium text-white/90 border border-white/20 hover:border-gold hover:text-gold transition-all duration-200">
+          <a href="/login" className="px-4 py-2 rounded-full text-sm font-medium text-white/90 border border-white/20 hover:border-gold hover:text-gold transition-all duration-200">
             Staff Login
           </a>
-          <a href="/student/login" className="px-4 py-2 rounded-full text-sm font-medium text-white/90 border border-white/20 hover:border-gold hover:text-gold transition-all duration-200">
+          <a href="/login" className="px-4 py-2 rounded-full text-sm font-medium text-white/90 border border-white/20 hover:border-gold hover:text-gold transition-all duration-200">
             Student Login
           </a>
           <a href="/apply" className="px-5 py-2 rounded-full text-sm font-semibold bg-gold text-navy shadow-gold hover:bg-gold-light hover:scale-105 active:scale-95 transition-all duration-200">
@@ -97,10 +97,10 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="h-px bg-white/10 my-2" />
-              <a href="/staff/login" className="text-white/80 hover:text-gold transition-colors">
+              <a href="/login" className="text-white/80 hover:text-gold transition-colors">
                 Staff Login
               </a>
-              <a href="/student/login" className="text-white/80 hover:text-gold transition-colors">
+              <a href="/login" className="text-white/80 hover:text-gold transition-colors">
                 Student Login
               </a>
               <a href="/apply" className="text-center px-5 py-3 rounded-full font-semibold bg-gold text-navy shadow-gold hover:bg-gold-light transition-all">

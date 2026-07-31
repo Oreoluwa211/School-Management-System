@@ -13,11 +13,14 @@ export default function Home() {
       <Hero />
       <StatsBar />
       <AboutPreview />
-      <NewsSection />
-      <Extracurricular />
-      <AnthemPledge />
+      <div id="news"><NewsSection /></div>
+      <div id="activities"><Extracurricular /></div>
+      <div id="anthem"><AnthemPledge /></div>
       <Newsletter />
       <CTABanner />
+      <div id="contact">
+        {/* Contact section placeholder */}
+      </div>
     </>
   );
 }
