@@ -18,10 +18,18 @@ export default function AnthemPledge() {
             <div className="bg-white rounded-xl2 shadow-card border-t-4 border-gold p-8 h-full hover:-translate-y-1 transition-transform duration-300">
               <h3 className="font-serif text-xl font-bold text-navy mb-4">School Anthem</h3>
               <p className="font-serif italic text-navy/60 leading-loose">
-                Goodnews College, our guiding light,<br />
-                In faith and learning we unite,<br />
-                With knowledge, truth, and hearts so bold,<br />
-                Our story forever to be told.
+                Goodnews on the move, always on the move,<br/>
+                for excellence teaching service, Goodnews on the move, <br/>
+                moral education with God intervetion,<br/>
+                for excellence teaching service Goodnews on the move,<br/>
+                we are always punctual no way for nonsence,<br/>
+                perciverence and disciple,<br/>
+                are always our watch word,<br/>
+                Goodnews on the move, always on the move,<br/>
+                for teachers always ready to teach us anytime,<br/>
+                Goodnews on the move, <br/>
+                Goodnews on the move, always on the move,<br/>
+                for excellence teaching service, Goodnews on the move.
               </p>
             </div>
           </FadeIn>
@@ -30,10 +38,10 @@ export default function AnthemPledge() {
             <div className="bg-white rounded-xl2 shadow-card border-t-4 border-gold p-8 h-full hover:-translate-y-1 transition-transform duration-300">
               <h3 className="font-serif text-xl font-bold text-navy mb-4">School Pledge</h3>
               <p className="font-serif italic text-navy/60 leading-loose">
-                I pledge to uphold the values of Goodnews Private College,<br />
-                To pursue excellence with integrity,<br />
-                To respect myself and others,<br />
-                And to serve my community with faith and diligence.
+                I pledge to be a good ambassador of this school,<br />
+                both in and outside of the school,<br />
+                I refuse to tarnish the name of my school and my family may,<br />
+                may God help me Amen.
               </p>
             </div>
           </FadeIn>
