@@ -15,14 +15,14 @@ export default function StudentLayout() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-[#f7f6f2]">
+    <div className="flex h-screen bg-[#f7f6f2] overflow-hidden">
       <StudentSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
         <StudentTopbar
           onMenuClick={() => setSidebarOpen(true)}
           studentName={studentName}
         />
-        <main className="flex-1 p-4 md:p-8">
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
           <Outlet />
         </main>
       </div>

@@ -29,9 +29,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
         {/* Logo */}
         <a href="/" className="flex items-center gap-3 group">
-          <div className="w-11 h-11 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center group-hover:rotate-6 transition-transform duration-300">
-            <GraduationCap className="text-gold w-6 h-6" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="GPC Logo"
+            className="w-12 h-12 object-contain group-hover:scale-105 transition-transform duration-300"
+          />
           <div className="leading-tight">
             <p className="text-white font-serif font-semibold text-lg tracking-wide">
               Goodnews Private College

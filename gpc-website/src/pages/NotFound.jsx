@@ -19,9 +19,7 @@ export default function NotFound() {
         transition={{ duration: 0.5 }}
         className="text-center relative z-10"
       >
-        <div className="w-20 h-20 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mx-auto mb-6">
-          <GraduationCap className="text-gold w-10 h-10" />
-        </div>
+        <img src="/logo.png" alt="GPC" className="w-20 h-20 object-contain mx-auto mb-6 opacity-80" />
         <h1 className="font-serif text-8xl font-bold text-gold mb-2">404</h1>
         <h2 className="font-serif text-2xl font-bold text-white mb-3">Page Not Found</h2>
         <p className="text-white/50 text-sm mb-8 max-w-sm mx-auto">

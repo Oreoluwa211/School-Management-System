@@ -61,7 +61,7 @@ export default function Hero() {
         >
           <div className="relative rounded-xl2 overflow-hidden shadow-card aspect-[4/5]">
             <img
-              src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=900&q=80"
+              src="images/Secondary-school-images3.jfif"
               alt="GPC students"
               className="w-full h-full object-cover"
             />

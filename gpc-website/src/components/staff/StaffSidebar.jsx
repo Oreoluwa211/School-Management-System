@@ -18,13 +18,13 @@ export default function StaffSidebar({ open, onClose }) {
       {open && (
         <div className="fixed inset-0 bg-black/40 z-30 lg:hidden" onClick={onClose} />
       )}
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-navy z-40 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:flex lg:flex-col ${open ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`fixed top-0 left-0 h-screen w-64 bg-navy z-40 transform transition-transform duration-300 lg:translate-x-0 lg:static lg:flex lg:flex-col ${open ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex items-center gap-3 px-6 py-5 border-b border-white/10">
-          <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center">
-            <GraduationCap className="text-gold w-5 h-5" />
-          </div>
+          <img src="/logo.png" alt="GPC" className="w-10 h-10 object-contain" />
           <div>
-            <p className="text-white font-serif font-semibold text-sm leading-tight">Goodnews Private College</p>
+            <p className="text-white font-serif font-semibold text-sm leading-tight">
+              Goodnews Private College
+            </p>
             <p className="text-gold text-[10px] tracking-widest uppercase">Staff Portal</p>
           </div>
         </div>

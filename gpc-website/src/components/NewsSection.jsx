@@ -8,21 +8,21 @@ const news = [
     title: "GPC Students Sweep Top Honors in 2025 WAEC Results",
     excerpt: "Our graduating class recorded a record-breaking 98% pass rate, with 12 students achieving distinctions in 8+ subjects.",
     date: "May 28, 2025",
-    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80",
+    image: "images/Secondary-school-images1.jfif",
   },
   {
     category: "Event",
     title: "Inter-House Sports Competition Kicks Off Next Week",
     excerpt: "Four houses battle for the championship trophy across track, field, and team events.",
     date: "May 20, 2025",
-    image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=600&q=80",
+    image: "images/Secondary-school-image-sport.jfif",
   },
   {
     category: "Fees",
     title: "Third Term Fee Schedule Now Available",
     excerpt: "Parents and guardians can now view and pay third term fees through the student portal.",
     date: "May 15, 2025",
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80",
+    image: "images/Secondary-school-images2.jfif",
   },
 ];
 

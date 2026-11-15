@@ -41,6 +41,10 @@ import NotFound from "./pages/NotFound";
 import Unauthorized from "./pages/Unauthorized";
 import ServerError from "./pages/ServerError";
 
+import Results from "./pages/admin/Results";
+import Settings from "./pages/admin/Settings";
+import Payments from "./pages/admin/Payments";
+
 function PublicLayout({ children }) {
   return (
     <div className="font-sans">
@@ -74,10 +78,10 @@ export default function App() {
                 <Route path="applications" element={<Applications />} />
                 <Route path="students" element={<Students />} />
                 <Route path="staff" element={<Staff />} />
-                <Route path="results" element={<ComingSoon title="Results" />} />
+                <Route path="results" element={<Results />} />
                 <Route path="notices" element={<Notices />} />
-                <Route path="payments" element={<ComingSoon title="Payments" />} />
-                <Route path="settings" element={<ComingSoon title="Settings" />} />
+                <Route path="payments" element={<Payments />} />
+                <Route path="settings" element={<Settings />} />
               </Route>
             </Route>
 

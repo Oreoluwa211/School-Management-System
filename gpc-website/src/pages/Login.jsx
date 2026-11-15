@@ -47,9 +47,7 @@ export default function Login() {
         className="relative w-full max-w-md bg-white rounded-xl2 shadow-card p-8 md:p-10"
       >
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center mb-4">
-            <GraduationCap className="text-gold-dark w-7 h-7" />
-          </div>
+          <img src="/logo.png" alt="GPC Logo" className="w-20 h-20 object-contain mb-3" />
           <h1 className="font-serif text-2xl font-bold text-navy">Welcome Back</h1>
           <p className="text-navy/50 text-sm mt-1">Sign in to access your portal</p>
         </div>

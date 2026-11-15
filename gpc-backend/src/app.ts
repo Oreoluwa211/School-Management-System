@@ -276,39 +276,73 @@ app.get(
 );
 
 // ── Paystack webhook ──────────────────────────────────────
-app.post("/api/payments/webhook",
-  express.raw({ type: "application/json" }),
+// Payments list + summary
+app.get("/api/payments", protect, authorize("super_admin", "admin"),
   asyncHandler(async (req, res) => {
-    const signature = req.headers["x-paystack-signature"] as string;
-    if (!signature || !env.PAYSTACK_SECRET_KEY) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+    const { status, type, page = "1", limit = "20" } = req.query as Record<string, string>;
 
-    const hash = crypto
-      .createHmac("sha512", env.PAYSTACK_SECRET_KEY)
-      .update(req.body)
-      .digest("hex");
+    const where: any = {};
+    if (status) where.status = status;
+    if (type) where.payment_type = type;
 
-    if (hash !== signature) {
-      return res.status(401).json({ message: "Invalid signature" });
-    }
+    const take = Math.min(Number(limit) || 20, 100);
+    const skip = (Math.max(Number(page) || 1, 1) - 1) * take;
 
-    const event = JSON.parse(req.body.toString());
-
-    if (event.event === "charge.success") {
-      const { reference, amount, customer } = event.data;
-      await prisma.payment.updateMany({
-        where: { paystack_ref: reference },
-        data: {
-          status: "success",
-          paystack_status: "success",
-          paid_at: new Date(),
-          amount: amount / 100,
+    const [total, data, successSum, pendingSum] = await Promise.all([
+      prisma.payment.count({ where }),
+      prisma.payment.findMany({
+        where,
+        include: {
+          student: { select: { id: true, first_name: true, last_name: true, student_id: true } },
+          admission: { select: { id: true, first_name: true, last_name: true } },
         },
-      });
-    }
+        orderBy: { created_at: "desc" },
+        skip,
+        take,
+      }),
+      prisma.payment.aggregate({ where: { status: "success" }, _sum: { amount: true } }),
+      prisma.payment.aggregate({ where: { status: "pending" }, _sum: { amount: true } }),
+    ]);
 
-    res.json({ received: true });
+    res.json({
+      data,
+      pagination: { total, page: Number(page), limit: take, totalPages: Math.ceil(total / take) },
+      summary: {
+        totalSuccess: Number(successSum._sum.amount || 0),
+        totalPending: Number(pendingSum._sum.amount || 0),
+        totalCount: total,
+      },
+    });
+  })
+);
+
+// Payments CSV export
+app.get("/api/payments/export", protect, authorize("super_admin", "admin"),
+  asyncHandler(async (req, res) => {
+    const payments = await prisma.payment.findMany({
+      include: {
+        student: { select: { first_name: true, last_name: true, student_id: true } },
+      },
+      orderBy: { created_at: "desc" },
+    });
+
+    const headers = ["Student Name", "Student ID", "Reference", "Type", "Amount", "Status", "Date"];
+    const rows = payments.map((p) => [
+      p.student ? `${p.student.first_name} ${p.student.last_name}` : "—",
+      p.student?.student_id || "—",
+      p.paystack_ref || "—",
+      p.payment_type,
+      Number(p.amount),
+      p.status,
+      (p.paid_at || p.created_at).toISOString().split("T")[0],
+    ]);
+
+    const escape = (val: any) => `"${String(val ?? "").replace(/"/g, '""')}"`;
+    const csv = [headers, ...rows].map((r) => r.map(escape).join(",")).join("\n");
+
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="payments-${Date.now()}.csv"`);
+    res.send(csv);
   })
 );
 

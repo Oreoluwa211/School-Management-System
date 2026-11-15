@@ -19,9 +19,7 @@ export default function Unauthorized() {
         transition={{ duration: 0.5 }}
         className="text-center relative z-10"
       >
-        <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto mb-6">
-          <ShieldOff className="text-red-400 w-10 h-10" />
-        </div>
+        <img src="/logo.png" alt="GPC" className="w-20 h-20 object-contain mx-auto mb-6 opacity-80" />
         <h1 className="font-serif text-8xl font-bold text-red-400 mb-2">403</h1>
         <h2 className="font-serif text-2xl font-bold text-white mb-3">Access Denied</h2>
         <p className="text-white/50 text-sm mb-8 max-w-sm mx-auto">

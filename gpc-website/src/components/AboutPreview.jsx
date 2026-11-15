@@ -14,12 +14,12 @@ export default function AboutPreview() {
         <FadeIn y={40}>
           <div className="relative h-[420px]">
             <img
-              src="https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=700&q=80"
+              src="images\Secondary-school-images1.jfif"
               alt="School building"
               className="absolute top-0 left-0 w-3/4 h-3/4 object-cover rounded-xl2 shadow-card"
             />
             <img
-              src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80"
+              src="images\Secondary-school-images2.jfif"
               alt="Students studying"
               className="absolute bottom-0 right-0 w-2/3 h-2/3 object-cover rounded-xl2 shadow-card border-4 border-white"
             />
